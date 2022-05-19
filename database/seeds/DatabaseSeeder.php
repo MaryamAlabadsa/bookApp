@@ -1,11 +1,10 @@
 <?php
 
-use App\book;
-use App\downloded;
+use App\Book;
+use App\Download;
 use App\favorite;
 use App\library;
 use Illuminate\Database\Seeder;
-use Illuminate\Foundation\Auth\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,18 +15,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UserSeeder::class);
+//         $this->call(UserSeeder::class);
         // \App\Models\User::factory(10)->create();
-        User::truncate();
-        book::truncate();
-        library::truncate();
-        favorite::truncate();
-        downloded::truncate();
-        \App\User::factory(10)->create();
-        \App\library::factory(10)->create();
-        \App\favorite::factory(10)->create();
-        \App\book::factory(10)->create();
-        \App\downloded::factory(10)->create();
+//
+//        \App\User::factory(10)->create();
+//        \App\library::factory(10)->create();
+//        \App\favorite::factory(10)->create();
+//        \App\Book::factory(10)->create();
+//        \App\Download::factory(10)->create();
+        $this->call([
+            BookSeeder::class,
+            UserSeeder::class,
+
+        ]);
 
     }
 }

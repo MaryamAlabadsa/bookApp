@@ -2,84 +2,148 @@
 
 namespace App\Http\Controllers;
 
-use App\book;
-use Illuminate\Http\Request;
+
+use App\Http\Resources\BookCollection;
+use App\Http\Resources\BookResource;
+use App\Http\Resources\Category\CategoryResource;
+use App\Models\Book;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
+use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function getHomePage()
     {
-        //
+        $categories = Category::all();
+        $most_Listened = Book::orderBy('listening_times', 'desc')->take(10)->get();
+        $most_published = Book::orderBy('created_at', 'desc')->take(10)->get();
+        return response()->json([
+            'message' => 'Done',
+            'data' => [
+                'categories' =>  CategoryResource::collection($categories),
+                'most_Listened ' => BookResource::collection($most_Listened),
+                'latest_publication' => BookResource::collection($most_published),
+            ],
+        ], 200);
+
+    }
+
+    public function getAllMostListenedBooks()
+    {
+        $most_Listened = Book::orderBy('listening_times', 'desc')->paginate(15);
+        return response()->json([
+            'message' => 'Done',
+            'data' => [
+                'most_Listened ' => BookResource::collection($most_Listened),
+            ],
+        ], 200);
+    }
+
+    public function getAllMostPublisedBooks()
+    {
+        $most_published  = Book::orderBy('listening_times', 'desc')->paginate(15);
+        return response()->json([
+            'message' => 'Done',
+            'data' => [
+                'most_published ' => BookResource::collection($most_published),
+            ],
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return BookCollection
      */
-    public function create()
+    public function index()
     {
-        //
+        return new BookCollection(Book::orderBy('created_at',"desc")->get());
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return array
      */
-    public function store(Request $request)
+    public function store(StoreBookRequest $request)
     {
-        //
+        $book = Book::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'writer' => $request->writer,
+            'image' => $request->image->store('public', 'public'),
+            'audio' =>  $request->audio->store('public', 'public'),
+        ]);
+
+        return ['message' => 'added Successfully',
+            'data' => [BookResource::make($book)],
+        ];
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\book  $book
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Book $book
+     * @return array
      */
-    public function show(book $book)
+    public function show(Book $book)
     {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\book  $book
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(book $book)
-    {
-        //
+        $book->update(['listening_times' => $book->listening_times+1]);
+        return ['message' => 'Successfully',
+            'data' => BookResource::make($book),
+        ];
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\book  $book
+     * @param \App\Http\Requests\UpdateBookRequest $request
+     * @param \App\Models\Book $book
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, book $book)
+    public function update(UpdateBookRequest $request, Book $book)
     {
-        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\book  $book
-     * @return \Illuminate\Http\Response
+     * @param \App\Models\Book $book
+     * @return string[]
      */
-    public function destroy(book $book)
+    public function destroy(Book $book)
     {
-        //
+        $book->delete();
+        return ['message' => ' successfully delete.',
+        ];
+    }
+    public function addToFav($id)
+    {
+        $book=Book::find($id);
+        if ($book){
+            Auth::user()->favorite($book);
+            return response()->json([
+                'message' => 'book favorited successfully',
+                'book'=>BookResource::make($book),
+            ], 201);
+        }else{
+            return response()->json([
+                'message' => 'book not found',
+            ]);
+        }
+
+    }
+    public function getFav(){
+        $recipes  =   Auth::user()->getFavoriteItems(Book::class)->get();
+
+        // return $recipes;
+        return response()->json([
+            'message' => 'Recipes favorited successfully',
+            'data' => BookResource::collection($recipes),
+        ], 200);
     }
 }

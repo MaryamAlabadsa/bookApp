@@ -20,7 +20,8 @@ class CreateBooksTable extends Migration
             $table->string('writer');
             $table->string('image');
             $table->string('audio');
-            $table->boolean('is_most_listened');
+            $table->integer('listening_times');
+            $table->softDeletesTz();
             $table->timestamps();
         });
     }

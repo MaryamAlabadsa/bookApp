@@ -1,12 +1,24 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
-use App\library;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(library::class, function (Faker $faker) {
-    return [
-        //
-    ];
-});
+class LibraryFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'is_completed' => $this->faker->numberBetween(0, 2),
+            'is_download' => $this->faker->numberBetween(0, 1),
+            'book_id' => $this->faker->numberBetween(1, 100),
+            'user_id' => $this->faker->numberBetween(1, 100),
+
+        ];
+    }
+}

@@ -11,13 +11,8 @@ class BookSeeder extends Seeder
      */
     public function run()
     {
-//        DB::table('book')->insert([
-//            'name' => Str::random(10),
-//            'description' => Str::random(10),
-//            'writer' => Str::random(10),
-//            'image' => Str::random(10),
-//            'audio' => Str::random(10),
-//            'is_most_listened' => Str::random(10),
-//        ]);
+        factory(App\Book::class, 50)->create()->each(function ($book) {
+            $book->posts()->save(factory(App\Book::class)->make());
+        });
     }
 }
