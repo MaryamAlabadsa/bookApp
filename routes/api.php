@@ -25,13 +25,14 @@ Route::middleware('auth:sanctum')->group(function () {
     //change user password
     Route::post('changePassword', [NewPasswordController::class, 'changePassword']);
     //update User Info
-    Route::put('x', [AuthController::class, 'updateUserInfo']);
+    Route::put('userInfo', [AuthController::class, 'updateUserInfo']);
 //home
     Route::post('home', [\App\Http\Controllers\BookController::class, 'getHomePage']);
-    Route::post('addToFavorite/{id}', [\App\Http\Controllers\BookController::class, 'addToFav']);
+    Route::post('favorite/{id}', [\App\Http\Controllers\BookController::class, 'addToFav']);
     Route::get('favItems', [\App\Http\Controllers\BookController::class, 'getFav']);
-    Route::post('AllMostListenedBooks', [\App\Http\Controllers\BookController::class, 'getAllMostListenedBooks']);
-    Route::post('AllMostPublisedBooks', [\App\Http\Controllers\BookController::class, 'getAllMostPublisedBooks']);
+    //to get most listened books type=>listening_times
+    //to get last books type=>created_at
+    Route::post('BooksByCategory/{type}', [\App\Http\Controllers\BookController::class, 'getBooksByCategory']);
     Route::get('DownloadBooks', [\App\Http\Controllers\LibraryController::class, 'getDownloadBooks']);
     Route::get('DownloadBooks/{id}', [\App\Http\Controllers\LibraryController::class, 'getCompletedBooks']);
 
@@ -44,8 +45,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 });
-//واجهات الاشتراك كيف نعملها
-//شاشة المكتبة
-//الراوتات
-//التوكن بالريجيستر برجع نل
 

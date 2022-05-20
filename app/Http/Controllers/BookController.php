@@ -30,24 +30,12 @@ class BookController extends Controller
 
     }
 
-    public function getAllMostListenedBooks()
-    {
-        $most_Listened = Book::orderBy('listening_times', 'desc')->paginate(15);
+    public function getBooksByCategory($type){
+        $book  = Book::orderBy($type, 'desc')->paginate(15);
         return response()->json([
             'message' => 'Done',
             'data' => [
-                'most_Listened ' => BookResource::collection($most_Listened),
-            ],
-        ], 200);
-    }
-
-    public function getAllMostPublisedBooks()
-    {
-        $most_published  = Book::orderBy('listening_times', 'desc')->paginate(15);
-        return response()->json([
-            'message' => 'Done',
-            'data' => [
-                'most_published ' => BookResource::collection($most_published),
+                BookResource::collection($book),
             ],
         ], 200);
     }
